@@ -1,0 +1,55 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+env:
+  PROJECT_ROOT: "{{.USER_WORKING_DIR}}"
+
+tasks:
+  # ============================================================
+  # SWA
+  # ============================================================
+
+  extract:
+    desc: Extract SWA release tarball to swa-release/
+    cmds:
+      - bash ./scripts/extract-swa.sh
+  prep:
+    desc: Prepare SWA release (extract helm charts, install provider, validate versions)
+    cmds:
+      - bash ./scripts/swa-release-prep.sh
+  mac-fix-tf-provider:
+    desc: Remove tf provider binary from quarantine (Mac ONLY)
+    cmds:
+      - find $HOME/.terraform.d/plugins/registry.terraform.io/cyberark/swa/ -type f | xargs xattr -d com.apple.quarantine || true
+
+  install-provider:
+    desc: Install SWA provider to Secrets Manager
+    cmds:
+      - bash ./scripts/install-swa-provider.sh
+  delete-provider:
+    desc: Delete SWA provider from Secrets Manager
+    cmds:
+      - bash ./scripts/delete-swa-provider.sh
+
+  install-server:
+    desc: Install SWA server to k8s
+    cmds:
+      - bash ./scripts/install-swa-server-k8s.sh
+  delete-server:
+    desc: Delete SWA server from k8s
+    cmds:
+      - bash ./scripts/delete-swa-server.sh
+
+  install-agent:
+    desc: Install SWA agent to k8s
+    cmds:
+      - bash ./scripts/install-swa-agent-k8s.sh
+  delete-agent:
+    desc: Delete SWA agent from k8s
+    cmds:
+      - bash ./scripts/delete-swa-agent.sh
+
+  oidc-values:
+    desc: Get OIDC Info
+    cmds:
+      - bash ./scripts/oidc-values.sh

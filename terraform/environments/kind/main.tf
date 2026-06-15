@@ -3,24 +3,28 @@ terraform {
 }
 
 # Call your local module block
-module "my_kind_cluster" {
-  source = "./modules/kind"
+module "local_kind_cluster" {
+  source = "../../modules/kind"
 
-  cluster_name = "dev"
+  cluster_name = var.cluster_name
 }
 
+variable "cluster_name" {
+  description = "Kind cluster name"
+  type        = string
+}
 output "cluster_name" {
   description = "Kind cluster name"
-  value       = module.my_kind_cluster.cluster_name
+  value       = module.local_kind_cluster.cluster_name
 }
 
 output "endpoint" {
   description = "The Kubernetes API Server endpoint"
-  value       = module.my_kind_cluster.endpoint
+  value       = module.local_kind_cluster.endpoint
 }
 
 output "kubeconfig_path" {
   description = "The local path where kubeconfig is stored"
-  value       = module.my_kind_cluster.kubeconfig_path
+  value       = module.local_kind_cluster.kubeconfig_path
 }
 
