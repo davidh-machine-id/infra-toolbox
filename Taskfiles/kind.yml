@@ -1,0 +1,52 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+tasks:
+  # ============================================================
+  # Kind
+  # ============================================================
+
+  create:
+    desc: Create/start kind cluster
+    preconditions:
+      - sh: test -n "${KIND_CLUSTER_NAME}"
+        msg: "KIND_CLUSTER_NAME not set"
+    env:
+      TF_VAR_cluster_name:
+        sh: 'echo "$KIND_CLUSTER_NAME"'
+    dir: ./terraform/environments/kind
+    cmds:
+      - terraform init && terraform apply -auto-approve
+  destroy:
+    desc: Destroy kind cluster
+    preconditions:
+      - sh: test -n "${KIND_CLUSTER_NAME}"
+        msg: "KIND_CLUSTER_NAME not set"
+    env:
+      TF_VAR_cluster_name:
+        sh: 'echo "$KIND_CLUSTER_NAME"'
+    dir: ./terraform/environments/kind
+    cmds:
+      - terraform init && terraform destroy -auto-approve
+  clean-terraform-state:
+    desc: Clean the terraform state
+    dir: ./terraform/environments/kind
+    cmds:
+      - terraform state list | xargs terraform state rm
+  load-image:
+    desc: Load container image from docker into kind
+    preconditions:
+      - sh: test -n "${KIND_CLUSTER_NAME}"
+        msg: "KIND_CLUSTER_NAME not set"
+      - sh: test -n "${IMAGE_NAME}"
+        msg: "IMAGE_NAME not set"
+    cmds:
+      - kind load image-archive $IMAGE_NAME --name $KIND_CLUSTER_NAME
+
+  list-images:
+    desc: List images loaded into kind
+    preconditions:
+      - sh: test -n "${KIND_CLUSTER_NAME}"
+        msg: "KIND_CLUSTER_NAME not set"
+    cmds:
+      - docker exec -it "${KIND_CLUSTER_NAME}-control-plane" crictl images

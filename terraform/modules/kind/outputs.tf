@@ -7,10 +7,10 @@ output "cluster_name" {
 
 output "endpoint" {
   description = "The Kubernetes API Server endpoint"
-  value       = kind_cluster.this.endpoint
+  value       = kind_cluster.default.endpoint
 }
 
 output "kubeconfig_path" {
   description = "The local path where kubeconfig is stored"
-  value       = kind_cluster.this.kubeconfig_path
+  value       = kind_cluster.default.kubeconfig_path
 }
