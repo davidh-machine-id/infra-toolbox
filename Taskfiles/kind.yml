@@ -27,7 +27,7 @@ tasks:
         sh: 'echo "$KIND_CLUSTER_NAME"'
     dir: ./terraform/environments/kind
     cmds:
-      - terraform destroy -auto-approve
+      - terraform init && terraform destroy -auto-approve
   clean-terraform-state:
     desc: Clean the terraform state
     dir: ./terraform/environments/kind
